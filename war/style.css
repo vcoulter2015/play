@@ -1,0 +1,40 @@
+body {
+    background-color: #eee;
+    color: #000;
+    /* font-size/line-height */
+    font: 1em/1.25em helvetica, arial, sans-serif;
+    text-align: center;
+}
+
+table {
+    border: 1px solid gray;
+    border-collapse: separate;
+    table-layout: fixed;
+    text-align: center;
+}
+
+td {
+    padding: 0.25em;
+}
+
+p {
+    margin: 0px;
+    padding: 0.1em 0.35em;
+}
+
+/* Classes for gameboard display. */
+.adj0 { color: darkgreen; }
+.adj1 { color: darkcyan}
+.adj2 { color: crimson; }
+.adj3 { color: darkmagenta; }
+.adj4 { color: blue; }
+.adj5 { color: indigo; }
+.adj6 { color: blueviolet; }
+.adj7 { color: indianred; }
+.adj8 { color: hotpink; }
+.adjX { color: black; }     /* that is, unexploded */
+.exploded { color: red; }
+.untouched {
+    /* background-color: #bbb; */
+    border: 1px dashed gray;
+}
