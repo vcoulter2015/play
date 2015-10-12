@@ -25,10 +25,8 @@ public class Minesweeper implements EntryPoint {
     // This is the entry point of the class.
     public void onModuleLoad() {
 
-        // Generate the array that's the actual minefield.
-        // Possible enhancement: Make a minefield object that wraps the 2D char array.
-        char[][] minefield = MineGenerator.generate();
-
+        // Create the object holding the array that's the actual minefield.
+        Minefield minefield = new Minefield();
 
         // Build the gameboard.
         buildGrid(minefield);
@@ -38,6 +36,8 @@ public class Minesweeper implements EntryPoint {
         // so the tab index of the reveal button is the square of the dimension of the grid.
         revealButton.setTabIndex(100);
         revealClickHandler.setMinefield(minefield);
+        // Give the click handler a reference to the grid since the Reveal button is outside the grid.
+        revealClickHandler.setAssociatedGrid(minefieldGrid);
         revealButton.addClickHandler(revealClickHandler);
 
         // Click handler for Restart button using minefieldGrid & buildGrid().
@@ -46,7 +46,7 @@ public class Minesweeper implements EntryPoint {
             @Override
             public void onClick(ClickEvent event) {
                 // Generate another minefield.
-                char[][] newMinefield = MineGenerator.generate();
+                Minefield newMinefield = new Minefield();
                 // Update the ? buttons with the new minefield.
                 buildGrid(newMinefield);
                 // Also need to tell the Reveal button's click handler about the new minefield.
@@ -69,7 +69,7 @@ public class Minesweeper implements EntryPoint {
      * Assumptions:
      *  - Called when minefieldGrid already exists as a 10x10 grid (and yes, that size is hardcoded).
      */
-    private void buildGrid(char[][] minefield) {
+    private void buildGrid(Minefield minefield) {
 
         // Delete the current contents of the grid.
         minefieldGrid.clear();

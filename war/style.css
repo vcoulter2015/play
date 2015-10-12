@@ -22,6 +22,10 @@ p {
     padding: 0 0.5em; /* 0.1em 0.35em; */
 }
 
+.instructions {
+    font: 1.25em/1.4em helvetica, arial, sans-serif;
+}
+
 /* Classes for gameboard display. */
 .adj0 { color: darkgreen; }
 .adj1 { color: darkcyan}

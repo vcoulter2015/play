@@ -9,19 +9,27 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Created by vcoulter on 10/8/15.
+ * Created by vcoulter in early October 2015.
  * Called "RevealClickHandler" since it's called by buttons that show the board --
  *  either the single-cell buttons or the Reveal button that ends the game.
  * Sample code from http://www.gwtproject.org/doc/latest/DevGuideUiHandlers.html
- *  added "extends Composite" in the declaration, but without indicating
- *  what package "Composite" was from.
+ *  added "extends Composite" in the declaration.
  */
 public class RevealClickHandler implements ClickHandler {
 
-    private char[][] minefield = null;
+    private Minefield minefield = null;
+    private Grid associatedGrid = null;
 
-    public void setMinefield(char[][] board) {
+    public void setMinefield(Minefield board) {
         minefield = board;
+    }
+
+    /**
+     * setAssociatedGrid is only necessary for the Reveal button;
+     * the ? buttons just get their parent.
+     */
+    public void setAssociatedGrid(Grid grid) {
+        associatedGrid = grid;
     }
 
     /**
@@ -50,16 +58,23 @@ public class RevealClickHandler implements ClickHandler {
 
             // GWT.log("Cell at row " + row + " column " + col + " clicked.");
 
-            // Ask the game what's at that square.
-            currentSpace = minefield[row][col];
+            // Ask the object what's at that square.
+            currentSpace = minefield.getSpaceValue(row, col);
 
             // Remove the clicked button.
             gridParent.clearCell(row, col);
+            // Register that we clicked another space with the minefield object.
+            minefield.decrementRemainingSpaces();
 
             // If it's not a mine, then display the # instead of the button.
             if ('X' != currentSpace) {
                 // Replace it with the # & color it.
                 gridParent.setHTML(row, col, "<p class='adj" + currentSpace + "'>" + currentSpace + "</p>");
+
+                // Is the game over?
+                if (minefield.isSweepFinished()) {
+                    GWT.log("Game has been won!");
+                }  // end if win
 
             } // end if not a mine
 
@@ -72,12 +87,17 @@ public class RevealClickHandler implements ClickHandler {
             }
         } else {
 
-            GWT.log("Reveal button");
             // Get a pointer to the grid that's older sibling of our parent VerticalPanel.
-            ComplexPanel parentPanel = (ComplexPanel) sender.getParent();
-            Widget oldestSibling = parentPanel.getWidget(0);
-            // Assuming the grid IS the oldest sibling ...
-            reveal( (Grid) oldestSibling );
+            if (associatedGrid != null) {
+                // GWT.log("Reveal button - using associatedGrid reference");
+                reveal(associatedGrid);
+            } else {
+                // TODO - throw an exception or fix this code
+                ComplexPanel parentPanel = (ComplexPanel) sender.getParent();
+                Widget oldestSibling = parentPanel.getWidget(0);
+                // Assuming the grid IS the oldest sibling ... which may not be correct in later versions
+                reveal((Grid) oldestSibling);
+            }
 
         }  // end if Reveal button
 
@@ -85,15 +105,17 @@ public class RevealClickHandler implements ClickHandler {
 
     private void reveal(Grid gameboard) {
 
+        char minefieldValue;
+
         for (int i=0; i < 10; i++)
             for (int j=0; j < 10; j++) {
 
                 if (gameboard.getHTML(i, j).indexOf("button") > -1) {
 
                     gameboard.clearCell(i, j);
-
-                    gameboard.setHTML(i, j, "<p class='adj" + minefield[i][j] + " untouched'>" +
-                            minefield[i][j] + "</p>");
+                    minefieldValue = minefield.getSpaceValue(i, j);
+                    gameboard.setHTML(i, j, "<p class='adj" + minefieldValue + " untouched'>" +
+                            minefieldValue + "</p>");
 
                 }  // end if
             } // end for
