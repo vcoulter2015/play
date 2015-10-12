@@ -20,6 +20,7 @@ public class Minesweeper implements EntryPoint {
     private Grid minefieldGrid = new Grid(10, 10);
     private Button revealButton = new Button("Reveal");
     private Button restartButton = new Button("Restart");
+    private RevealClickHandler revealClickHandler = new RevealClickHandler();
 
     // This is the entry point of the class.
     public void onModuleLoad() {
@@ -27,29 +28,29 @@ public class Minesweeper implements EntryPoint {
         // Generate the array that's the actual minefield.
         // Possible enhancement: Make a minefield object that wraps the 2D char array.
         char[][] minefield = MineGenerator.generate();
-        RevealClickHandler eClickHandler = null;
 
-        // Build the GUI.
+
+        // Build the gameboard.
         buildGrid(minefield);
 
         // Tab index is how we tell what buttons are clicked.
         // The cells in the 10x10 grid are tab indices 0-99,
         // so the tab index of the reveal button is the square of the dimension of the grid.
         revealButton.setTabIndex(100);
-        eClickHandler = new RevealClickHandler();
-        eClickHandler.setMinefield(minefield);
-        revealButton.addClickHandler(eClickHandler);
+        revealClickHandler.setMinefield(minefield);
+        revealButton.addClickHandler(revealClickHandler);
 
         // Click handler for Restart button using minefieldGrid & buildGrid().
         // BTW this is an example of an anonymous click handler.
         restartButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                // Regenerate the minefield and redo the grid.
-                /* TODO - this is a bug - not only do I need to rebuild the grid,
-                 * but I also need to tell the Reveal button's click handler
-                 * of the new grid. */
-                buildGrid( MineGenerator.generate() );
+                // Generate another minefield.
+                char[][] newMinefield = MineGenerator.generate();
+                // Update the ? buttons with the new minefield.
+                buildGrid(newMinefield);
+                // Also need to tell the Reveal button's click handler about the new minefield.
+                revealClickHandler.setMinefield(newMinefield);
             } // end onClick event
         });
 
