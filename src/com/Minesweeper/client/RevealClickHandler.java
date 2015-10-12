@@ -48,7 +48,7 @@ public class RevealClickHandler implements ClickHandler {
             col = myTabIndex % 10;
             row = (myTabIndex - col) / 10;
 
-            GWT.log("Cell at row " + row + " column " + col + " clicked.");
+            // GWT.log("Cell at row " + row + " column " + col + " clicked.");
 
             // Ask the game what's at that square.
             currentSpace = minefield[row][col];

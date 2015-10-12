@@ -2,7 +2,7 @@ body {
     background-color: #eee;
     color: #000;
     /* font-size/line-height */
-    font: 1em/1.25em helvetica, arial, sans-serif;
+    font: 2em/2.1em helvetica, arial, sans-serif;
     text-align: center;
 }
 
@@ -19,7 +19,7 @@ td {
 
 p {
     margin: 0px;
-    padding: 0.1em 0.35em;
+    padding: 0 0.5em; /* 0.1em 0.35em; */
 }
 
 /* Classes for gameboard display. */
@@ -28,10 +28,10 @@ p {
 .adj2 { color: crimson; }
 .adj3 { color: darkmagenta; }
 .adj4 { color: blue; }
-.adj5 { color: indigo; }
-.adj6 { color: blueviolet; }
+.adj5 { color: blueviolet; }
+.adj6 { color: hotpink; }
 .adj7 { color: indianred; }
-.adj8 { color: hotpink; }
+.adj8 { color: indigo; }
 .adjX { color: black; }     /* that is, unexploded */
 .exploded { color: red; }
 .untouched {
