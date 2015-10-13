@@ -52,6 +52,8 @@ public class Minefield {
             87 (or larger) is too easy.
          */
         difficultyLevel = 71 + Math.abs(rnd.nextInt()) % 9;
+        // In case of testing:
+        // difficultyLevel = 90;
 
         mineCount = 0;
 
