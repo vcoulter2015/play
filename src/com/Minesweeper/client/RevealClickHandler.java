@@ -40,8 +40,29 @@ public class RevealClickHandler implements ClickHandler {
     }
 
     /**
-     * getNameFmt looks at the contents of the username textbox and returns its value
-     *  in a case-insensitive, trimmed fashion.
+     * Purpose: Checks if the character is allowed.
+     * @param c - the character in question
+     * @return - if c is an allowed character, return it
+     *  (for a StringBuilder's convenience), otherwise return "".
+     */
+    private static String returnSanitaryValue(char c) {
+        if (c == '.' || c == ',' || c == ' ')
+            return Character.toString(c);
+        else if (c >= 48 && c <= 57)    // 0-9 ok
+            return Character.toString(c);
+        else if (c >= 65 && c <= 90)    // A-Z ok
+            return Character.toString(c);
+        else if (c >= 97 && c <= 122)   // a-z ok
+            return Character.toString(c);
+        else
+            return "";
+    }
+
+    /**
+     * getNameFmt looks at the contents of the username textbox and sanitizes it.
+     *   Then it returns its value in a case-insensitive, trimmed fashion.
+     * (Side effect: it sets the contents of the username textbox to the result in order to give the user feedback -
+     *      unless the contents are all spaces, and then they're ignored.)
      *  It's static because both the main game class and this class need it.
      * Assumptions: if no one first called setNameTextBox, an exception will be thrown.
      * @return - a string without leading or trailing spaces in which the first character
@@ -52,15 +73,25 @@ public class RevealClickHandler implements ClickHandler {
 
         String nameTrim = nameTextBox.getText().trim();
         // What is the diff between the getValue() and getText() methods?
+
         // Check on the length of what the user typed in:
         if (nameTrim.length() == 0)
             return "";
-        else if (nameTrim.length() == 1)
-            return nameTrim.toUpperCase();
         else {
-            String firstLetter = nameTrim.substring(0, 1);
-            return firstLetter.toUpperCase() + nameTrim.substring(1).toLowerCase();
-        }
+            StringBuilder sanitaryName = new StringBuilder();
+            String resultName;
+            for (int i = 0; i < nameTrim.length(); i++) {
+                sanitaryName.append(returnSanitaryValue(nameTrim.charAt(i)));
+            } // end for
+            if (sanitaryName.length() <= 1) {
+                resultName = sanitaryName.toString().toUpperCase();
+            } else {
+                String firstLetter = sanitaryName.substring(0, 1);
+                resultName = firstLetter.toUpperCase() + sanitaryName.substring(1).toLowerCase();
+            }
+            nameTextBox.setText(resultName);
+            return resultName;
+        } // end else name isn't blank
     }
 
     /**
