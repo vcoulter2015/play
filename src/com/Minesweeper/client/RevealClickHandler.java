@@ -140,7 +140,9 @@ public class RevealClickHandler implements ClickHandler {
                     playerName = getNameFmt();
                     if (!playerName.equals("")) {
                         outcomeLabel.setText("You won, " + playerName + "! Click Restart for another game.");
-                        // TODO - record a win
+                        // Record a win in the server-side database.
+                        GWT.log("Recording a win with score " + minefield.getMineCount());
+                        GWT.log(DbAccessClickHandler.serverAction(playerName, ServerAction.Win, minefield.getMineCount()));
                     } // end if we need to record a win
                     else
                         outcomeLabel.setText("You won! Click Restart for another game.");
@@ -159,7 +161,9 @@ public class RevealClickHandler implements ClickHandler {
                 playerName = getNameFmt();
                 if (!playerName.equals("")) {
                     outcomeLabel.setText("You hit a mine, " + playerName + "! Click Restart for another game.");
-                    // TODO - record a loss
+                    // Record a loss in the server-side database.
+                    GWT.log("Recording a loss.");
+                    GWT.log(DbAccessClickHandler.serverAction(playerName, ServerAction.Loss));
                 } // end if we need to record a loss
                 else
                     outcomeLabel.setText("You hit a mine! Click Restart for another game.");
@@ -177,7 +181,9 @@ public class RevealClickHandler implements ClickHandler {
                 // then clicks Reveal again, at that point this'll be recorded as a draw ...
                 // but why would a player be doing that anyway?
                 outcomeLabel.setText("Keep trying, " + playerName + "! Click Restart for another game.");
-                // TODO - record that this was a draw
+                // Record that this was a draw
+                GWT.log("Reveal button recording a draw.");
+                GWT.log(DbAccessClickHandler.serverAction(playerName, ServerAction.Draw));
             }
 
             // Get a pointer to the grid that's older sibling of our parent VerticalPanel.

@@ -58,11 +58,11 @@ public class Minesweeper implements EntryPoint {
                     outcomeDisplay.setText("");
                 } else {  // the player clicked restart before the game was over
                     String playerName = RevealClickHandler.getNameFmt();
-
-                    // This is a test for now:
+                    // Record that this was a draw.
                     GWT.log(playerName + " clicked Restart before game over");
                     if (!playerName.equals("")) {
-                        // TODO - if the game wasn't over, this was a draw.
+                        GWT.log("Restart button recording a draw.");
+                        GWT.log(DbAccessClickHandler.serverAction(playerName, ServerAction.Draw));
                     } // end if have a player name
                 } // end else player clicked restart before game over
 
@@ -70,7 +70,7 @@ public class Minesweeper implements EntryPoint {
                 Minefield newMinefield = new Minefield();
                 // Update the ? buttons with the new minefield.
                 buildGrid(newMinefield);
-                // Also need to tell the other buttons' click handler about the new minefield.
+                // Also need to tell the other button's click handler about the new minefield.
                 RevealClickHandler.setMinefield(newMinefield);
             } // end onClick event
         });
