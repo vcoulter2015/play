@@ -61,9 +61,8 @@ public class RevealClickHandler implements ClickHandler {
     /**
      * getNameFmt looks at the contents of the username textbox and sanitizes it.
      *   Then it returns its value in a case-insensitive, trimmed fashion.
-     * (Side effect: it sets the contents of the username textbox to the result in order to give the user feedback -
-     *      unless the contents are all spaces, and then they're ignored.)
-     *  It's static because both the main game class and this class need it.
+     * (Side effect: it sets the contents of the username textbox to the result in order to give the user feedback.)
+     *  It's static because other pieces of the game need it.
      * Assumptions: if no one first called setNameTextBox, an exception will be thrown.
      * @return - a string without leading or trailing spaces in which the first character
      *  is upper case and any following characters are lower case, or "" if there was
@@ -73,25 +72,40 @@ public class RevealClickHandler implements ClickHandler {
 
         String nameTrim = nameTextBox.getText().trim();
         // What is the diff between the getValue() and getText() methods?
+        String resultName = "";
 
         // Check on the length of what the user typed in:
         if (nameTrim.length() == 0)
-            return "";
+            resultName = "";
         else {
             StringBuilder sanitaryName = new StringBuilder();
-            String resultName;
+
             for (int i = 0; i < nameTrim.length(); i++) {
                 sanitaryName.append(returnSanitaryValue(nameTrim.charAt(i)));
             } // end for
-            if (sanitaryName.length() <= 1) {
-                resultName = sanitaryName.toString().toUpperCase();
-            } else {
-                String firstLetter = sanitaryName.substring(0, 1);
-                resultName = firstLetter.toUpperCase() + sanitaryName.substring(1).toLowerCase();
+            // Was anything left after that?
+            if (sanitaryName.toString().equals(""))
+                resultName = "";
+            else {
+                String intermediateResultName;
+                // Make sure the name isn't longer than 35 characters (database constraint).
+                // and redo trim since the sanitizing and substring may have left trailing spaces.
+                if (sanitaryName.length() >= 35)
+                    intermediateResultName = sanitaryName.substring(0, 35).trim();
+                else
+                    intermediateResultName = sanitaryName.toString().trim();
+
+                if (intermediateResultName.length() <= 1)
+                    resultName = intermediateResultName.toUpperCase();
+                else
+                    resultName = intermediateResultName.substring(0, 1).toUpperCase() +
+                                         intermediateResultName.substring(1).toLowerCase();
+
             }
-            nameTextBox.setText(resultName);
-            return resultName;
+
         } // end else name isn't blank
+        nameTextBox.setText(resultName);
+        return resultName;
     }
 
     /**
@@ -142,7 +156,7 @@ public class RevealClickHandler implements ClickHandler {
                         outcomeLabel.setText("You won, " + playerName + "! Click Restart for another game.");
                         // Record a win in the server-side database.
                         GWT.log("Recording a win with score " + minefield.getMineCount());
-                        GWT.log(DbAccessClickHandler.serverAction(playerName, ServerAction.Win, minefield.getMineCount()));
+                        GWT.log(DbAccessHandler.serverRequest(playerName, ServerAction.Win, minefield.getMineCount()));
                     } // end if we need to record a win
                     else
                         outcomeLabel.setText("You won! Click Restart for another game.");
@@ -163,7 +177,7 @@ public class RevealClickHandler implements ClickHandler {
                     outcomeLabel.setText("You hit a mine, " + playerName + "! Click Restart for another game.");
                     // Record a loss in the server-side database.
                     GWT.log("Recording a loss.");
-                    GWT.log(DbAccessClickHandler.serverAction(playerName, ServerAction.Loss));
+                    GWT.log(DbAccessHandler.serverRequest(playerName, ServerAction.Loss));
                 } // end if we need to record a loss
                 else
                     outcomeLabel.setText("You hit a mine! Click Restart for another game.");
@@ -183,7 +197,7 @@ public class RevealClickHandler implements ClickHandler {
                 outcomeLabel.setText("Keep trying, " + playerName + "! Click Restart for another game.");
                 // Record that this was a draw
                 GWT.log("Reveal button recording a draw.");
-                GWT.log(DbAccessClickHandler.serverAction(playerName, ServerAction.Draw));
+                GWT.log(DbAccessHandler.serverRequest(playerName, ServerAction.Draw));
             }
 
             // Get a pointer to the grid that's older sibling of our parent VerticalPanel.

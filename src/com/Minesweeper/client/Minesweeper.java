@@ -15,13 +15,17 @@ public class Minesweeper implements EntryPoint {
 
     private VerticalPanel mainPanel = new VerticalPanel();
     private HorizontalPanel namePanel = new HorizontalPanel();
+    private HorizontalPanel buttonPanel = new HorizontalPanel();
+    private Grid scoreDisplayGrid = new Grid(2, 4);
     private Label usernameLabel = new Label("Enter your name: ");
     private TextBox usernameTextBox = new TextBox();
     private Label outcomeDisplay = new Label();
     private Grid minefieldGrid = new Grid(10, 10);
     private Button revealButton = new Button("Reveal");
     private Button restartButton = new Button("Restart");
+    private Button scoreButton = new Button("View Scores");
     private RevealClickHandler revealClickHandler = new RevealClickHandler();
+    private ScoreClickHandler scoreClickHandler = new ScoreClickHandler();
 
     // This is the entry point of the class.
     public void onModuleLoad() {
@@ -35,6 +39,8 @@ public class Minesweeper implements EntryPoint {
 
         // Build the gameboard.
         buildGrid(minefield);
+
+        // Fix up the buttons & their horizontal panel.
 
         // Tab index is how we tell what buttons are clicked.
         // The cells in the 10x10 grid are tab indices 0-99,
@@ -62,7 +68,7 @@ public class Minesweeper implements EntryPoint {
                     GWT.log(playerName + " clicked Restart before game over");
                     if (!playerName.equals("")) {
                         GWT.log("Restart button recording a draw.");
-                        GWT.log(DbAccessClickHandler.serverAction(playerName, ServerAction.Draw));
+                        GWT.log(DbAccessHandler.serverRequest(playerName, ServerAction.Draw));
                     } // end if have a player name
                 } // end else player clicked restart before game over
 
@@ -75,14 +81,31 @@ public class Minesweeper implements EntryPoint {
             } // end onClick event
         });
 
+        // Set up click handler for score button.
+        ScoreClickHandler.setScoreDisplayGrid(scoreDisplayGrid);
+        scoreButton.addClickHandler(scoreClickHandler);
+
+        buttonPanel.add(revealButton);
+        buttonPanel.add(restartButton);
+        buttonPanel.add(scoreButton);
+
+        // Set up the scores display.
+        scoreDisplayGrid.setText(0, 0, "Wins");
+        scoreDisplayGrid.setText(0, 1, "Losses");
+        scoreDisplayGrid.setText(0, 2, "Draws");
+        scoreDisplayGrid.setText(0, 3, "Score");
+        scoreDisplayGrid.getRowFormatter().addStyleName(0, "scoreheader");
+        // Don't display the scores until the user asks for them.
+        scoreDisplayGrid.setVisible(false);
+
         // Fix up the main panel.
         mainPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 
         mainPanel.add(namePanel);
         mainPanel.add(outcomeDisplay);
         mainPanel.add(minefieldGrid);
-        mainPanel.add(revealButton);
-        mainPanel.add(restartButton);
+        mainPanel.add(buttonPanel);
+        mainPanel.add(scoreDisplayGrid);
 
         // Associate the Main panel with the HTML host page.
         RootPanel.get("gameboard").add(mainPanel);

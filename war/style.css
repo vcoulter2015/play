@@ -17,6 +17,10 @@ td {
     padding: 0.25em;
 }
 
+.scoreheader {
+    font-weight: bold;
+}
+
 p {
     margin: 0;
     padding: 0 0.6em; /* 0.1em 0.35em; then right-left 0.5em was close */
