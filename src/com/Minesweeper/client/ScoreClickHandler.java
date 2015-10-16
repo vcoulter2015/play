@@ -5,7 +5,6 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.Grid;
 
 /**
@@ -36,7 +35,7 @@ public class ScoreClickHandler implements ClickHandler {
         // If we're still here, send a request to the database.
         // GWT.log("Request for scores for '" + playerName + "'");
 
-        DbAccessHandler.serverRequest(playerName, ServerAction.GetScore);
+        DbAccessHandler.serverRequest(playerName, ScoreAction.GetScore);
 
         // The serverRequest call happens asynchronously & will call displayScores when it gets back.
     }
@@ -64,6 +63,58 @@ public class ScoreClickHandler implements ClickHandler {
         } else {
             GWT.log("Could not parse '" + data + "'");
         }
+
+    }
+
+    // Overload.
+    public static void updateScore(ScoreAction outcome) {
+        updateScore(outcome, 0);
+    }
+
+    /**
+     * Only does anything if the player name is filled in and if the scores are visible.
+     * @param outcome - win, loss, or draw (which column(s) to update)
+     * @param score - optional - if a win, the score.
+     */
+    public static void updateScore(ScoreAction outcome, int score) {
+
+        if (!RevealClickHandler.doClientUpdateScores ||
+                    !scoreDisplayGrid.isVisible() ||
+                    RevealClickHandler.getNameFmt().equals(""))
+            return;
+
+        String oldCount = "";
+        String oldScore;
+        int newCount;
+        int newScore = 0;
+
+        // Columns of the score grid in order: wins, losses, draws, and score.
+        switch(outcome) {
+            case Loss:
+                oldCount = scoreDisplayGrid.getText(1, 1);
+                break;
+            case Win:
+                oldCount = scoreDisplayGrid.getText(1, 0);
+                oldScore = scoreDisplayGrid.getText(1, 3);
+                newScore = Integer.parseInt(oldScore) + score;
+                break;
+            case Draw:
+                oldCount = scoreDisplayGrid.getText(1, 2);
+        } // end switch
+
+        newCount = Integer.parseInt(oldCount) + 1;
+
+        switch(outcome) {
+            case Loss:
+                scoreDisplayGrid.setText(1, 1, Integer.toString(newCount));
+                break;
+            case Win:
+                scoreDisplayGrid.setText(1, 0, Integer.toString(newCount));
+                scoreDisplayGrid.setText(1, 3, Integer.toString(newScore));
+                break;
+            case Draw:
+                scoreDisplayGrid.setText(1, 2, Integer.toString(newCount));
+        } // end switch
 
     }
 }

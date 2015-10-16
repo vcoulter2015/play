@@ -68,7 +68,8 @@ public class Minesweeper implements EntryPoint {
                     // GWT.log(playerName + " clicked Restart before game over");
                     if (!playerName.equals("")) {
                         GWT.log("Restart button recording a draw.");
-                        DbAccessHandler.serverRequest(playerName, ServerAction.Draw);
+                        DbAccessHandler.serverRequest(playerName, ScoreAction.Draw);
+                        ScoreClickHandler.updateScore(ScoreAction.Draw);
                     } // end if have a player name
                 } // end else player clicked restart before game over
 

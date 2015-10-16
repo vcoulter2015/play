@@ -1,6 +1,5 @@
 package com.Minesweeper.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
@@ -18,6 +17,10 @@ public class RevealClickHandler implements ClickHandler {
     private static Grid associatedGrid = null;
     private static TextBox nameTextBox = null;
     private static Label outcomeLabel = null;
+    // Scores are updated by the client-side code (these modules) if they're visible.
+    // However, this will mask any issues on the server-side.
+    // If server-side debugging is needed, set this to false.
+    public static final boolean doClientUpdateScores = true;
 
     public static void setMinefield (Minefield board) {
         minefield = board;
@@ -156,7 +159,8 @@ public class RevealClickHandler implements ClickHandler {
                         outcomeLabel.setText("You won, " + playerName + "! Click Restart for another game.");
                         // Record a win in the server-side database.
                         // GWT.log("Recording a win with score " + minefield.getMineCount());
-                        DbAccessHandler.serverRequest(playerName, ServerAction.Win, minefield.getMineCount());
+                        DbAccessHandler.serverRequest(playerName, ScoreAction.Win, minefield.getMineCount());
+                        ScoreClickHandler.updateScore(ScoreAction.Win, minefield.getMineCount());
                     } // end if we need to record a win
                     else
                         outcomeLabel.setText("You won! Click Restart for another game.");
@@ -177,7 +181,8 @@ public class RevealClickHandler implements ClickHandler {
                     outcomeLabel.setText("You hit a mine, " + playerName + "! Click Restart for another game.");
                     // Record a loss in the server-side database.
                     // GWT.log("Recording a loss.");
-                    DbAccessHandler.serverRequest(playerName, ServerAction.Loss);
+                    DbAccessHandler.serverRequest(playerName, ScoreAction.Loss);
+                    ScoreClickHandler.updateScore(ScoreAction.Loss);
                 } // end if we need to record a loss
                 else
                     outcomeLabel.setText("You hit a mine! Click Restart for another game.");
@@ -197,7 +202,8 @@ public class RevealClickHandler implements ClickHandler {
                 outcomeLabel.setText("Keep trying, " + playerName + "! Click Restart for another game.");
                 // Record that this was a draw
                 // GWT.log("Reveal button recording a draw.");
-                DbAccessHandler.serverRequest(playerName, ServerAction.Draw);
+                DbAccessHandler.serverRequest(playerName, ScoreAction.Draw);
+                ScoreClickHandler.updateScore(ScoreAction.Draw);
             }
 
             // Get a pointer to the grid that's older sibling of our parent VerticalPanel.

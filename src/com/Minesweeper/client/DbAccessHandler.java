@@ -15,11 +15,11 @@ import com.google.gwt.json.client.JSONString;
 public class DbAccessHandler {
 
     // overloaded version
-    public static void serverRequest(String playerName, ServerAction action) {
+    public static void serverRequest(String playerName, ScoreAction action) {
         serverRequest(playerName, action, 0);
     }
 
-    public static void serverRequest(String playerName, ServerAction action, int score) {
+    public static void serverRequest(String playerName, ScoreAction action, int score) {
 
         JSONObject dataContainer = new JSONObject();
         JSONString jsonName = new JSONString(playerName);
@@ -61,7 +61,7 @@ public class DbAccessHandler {
         try {
             Request req;
             // If our action is getscore, the callback must be handled differently.
-            if (ServerAction.GetScore != action) {
+            if (ScoreAction.GetScore != action) {
                 req = rb.sendRequest(dataContainer.toString(), new RequestCallback() {
                     @Override
                     public void onResponseReceived(Request request, Response response) {
