@@ -15,11 +15,11 @@ import com.google.gwt.json.client.JSONString;
 public class DbAccessHandler {
 
     // overloaded version
-    public static String serverRequest(String playerName, ServerAction action) {
-        return serverRequest(playerName, action, 0);
+    public static void serverRequest(String playerName, ServerAction action) {
+        serverRequest(playerName, action, 0);
     }
 
-    public static String serverRequest(String playerName, ServerAction action, int score) {
+    public static void serverRequest(String playerName, ServerAction action, int score) {
 
         JSONObject dataContainer = new JSONObject();
         JSONString jsonName = new JSONString(playerName);
@@ -45,7 +45,7 @@ public class DbAccessHandler {
                 postUri.append("hello");
         }
 
-        GWT.log("serverRequest data: " + dataContainer.toString());
+        // GWT.log("serverRequest will send data: " + dataContainer.toString());
 
         // JsonpRequestBuilder jsonprb = new JsonpRequestBuilder(); // but rb seems to do what I want
         RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, postUri.toString());
@@ -57,7 +57,7 @@ public class DbAccessHandler {
         rb.setHeader("content-type", "application/json");
         // rb.setRequestData(dataContainer.toString()); // This is also an argument to sendRequest.
 
-        GWT.log("To " + postUri + " - " + dataContainer);
+        GWT.log("serverRequest will send data to " + postUri + " - " + dataContainer);
         try {
             Request req;
             // If our action is getscore, the callback must be handled differently.
@@ -86,12 +86,10 @@ public class DbAccessHandler {
                 });
             } // end else getting score
 
-            return req.toString();
+            GWT.log("SendRequest returned: " + req.toString());
         } catch (RequestException e) {
             GWT.log("Error on sendRequest: " + e);
         }
-        // If we're here, then the return req.toString() didn't happen.
-        return "Exception thrown on sending request; see GWT.log.";
     }
 
 }

@@ -34,10 +34,9 @@ public class ScoreClickHandler implements ClickHandler {
             return;
         // If the player name is blank, do nothing.
         // If we're still here, send a request to the database.
-        GWT.log("Request for scores for '" + playerName + "'");
+        // GWT.log("Request for scores for '" + playerName + "'");
 
-        String serverResults = DbAccessHandler.serverRequest(playerName, ServerAction.GetScore);
-        GWT.log("Received from server: '" + serverResults + "'");
+        DbAccessHandler.serverRequest(playerName, ServerAction.GetScore);
 
         // The serverRequest call happens asynchronously & will call displayScores when it gets back.
     }

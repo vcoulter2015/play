@@ -155,8 +155,8 @@ public class RevealClickHandler implements ClickHandler {
                     if (!playerName.equals("")) {
                         outcomeLabel.setText("You won, " + playerName + "! Click Restart for another game.");
                         // Record a win in the server-side database.
-                        GWT.log("Recording a win with score " + minefield.getMineCount());
-                        GWT.log(DbAccessHandler.serverRequest(playerName, ServerAction.Win, minefield.getMineCount()));
+                        // GWT.log("Recording a win with score " + minefield.getMineCount());
+                        DbAccessHandler.serverRequest(playerName, ServerAction.Win, minefield.getMineCount());
                     } // end if we need to record a win
                     else
                         outcomeLabel.setText("You won! Click Restart for another game.");
@@ -176,8 +176,8 @@ public class RevealClickHandler implements ClickHandler {
                 if (!playerName.equals("")) {
                     outcomeLabel.setText("You hit a mine, " + playerName + "! Click Restart for another game.");
                     // Record a loss in the server-side database.
-                    GWT.log("Recording a loss.");
-                    GWT.log(DbAccessHandler.serverRequest(playerName, ServerAction.Loss));
+                    // GWT.log("Recording a loss.");
+                    DbAccessHandler.serverRequest(playerName, ServerAction.Loss);
                 } // end if we need to record a loss
                 else
                     outcomeLabel.setText("You hit a mine! Click Restart for another game.");
@@ -196,8 +196,8 @@ public class RevealClickHandler implements ClickHandler {
                 // but why would a player be doing that anyway?
                 outcomeLabel.setText("Keep trying, " + playerName + "! Click Restart for another game.");
                 // Record that this was a draw
-                GWT.log("Reveal button recording a draw.");
-                GWT.log(DbAccessHandler.serverRequest(playerName, ServerAction.Draw));
+                // GWT.log("Reveal button recording a draw.");
+                DbAccessHandler.serverRequest(playerName, ServerAction.Draw);
             }
 
             // Get a pointer to the grid that's older sibling of our parent VerticalPanel.
