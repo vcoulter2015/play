@@ -12,7 +12,7 @@ public class Minefield {
     private char[][] gameboard;
     // Various GUI components depend on the size being 10, so that's not
     // completely arbitrary.
-    private final int SIZE = 10;  // the length of one dimension
+    public final int SIZE = 10;  // the length of one dimension
     private int mineCount;
     private int remainingSpaces;
 

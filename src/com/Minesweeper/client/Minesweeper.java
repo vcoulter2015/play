@@ -50,7 +50,7 @@ public class Minesweeper implements EntryPoint {
         // Give the click handler a reference to other UI objects,
         // namely the grid and the textbox.
         RevealClickHandler.setOutcomeLabel(outcomeDisplay);
-        RevealClickHandler.setAssociatedGrid(minefieldGrid);
+        RevealClickHandler.setMinefieldGrid(minefieldGrid);
         RevealClickHandler.setNameTextBox(usernameTextBox);
         revealButton.addClickHandler(revealClickHandler);
 

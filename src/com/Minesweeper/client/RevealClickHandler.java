@@ -1,5 +1,6 @@
 package com.Minesweeper.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
@@ -14,7 +15,7 @@ import com.google.gwt.user.client.ui.*;
 public class RevealClickHandler implements ClickHandler {
 
     private static Minefield minefield = null;
-    private static Grid associatedGrid = null;
+    private static Grid minefieldGrid = null;
     private static TextBox nameTextBox = null;
     private static Label outcomeLabel = null;
     // Scores are updated by the client-side code (these modules) if they're visible.
@@ -35,11 +36,11 @@ public class RevealClickHandler implements ClickHandler {
     }
 
     /**
-     * setAssociatedGrid is only necessary for the Reveal button;
+     * setMinefieldGrid is only necessary for the Reveal button;
      * the ? buttons just get their parent.
      */
-    public static void setAssociatedGrid(Grid grid) {
-        associatedGrid = grid;
+    public static void setMinefieldGrid(Grid grid) {
+        minefieldGrid = grid;
     }
 
     /**
@@ -165,7 +166,10 @@ public class RevealClickHandler implements ClickHandler {
                     else
                         outcomeLabel.setText("You won! Click Restart for another game.");
                 }  // end if win
-
+                else if ('0' == currentSpace) {
+                    GWT.log("Beginning cascade at row " + row + " column " + col + ".");
+                    cascade(gridParent, row, col);
+                }
             } // end if not a mine
 
             // If it IS a mine, game over!
@@ -207,15 +211,15 @@ public class RevealClickHandler implements ClickHandler {
             }
 
             // Get a pointer to the grid that's older sibling of our parent VerticalPanel.
-            if (associatedGrid != null) {
-                // GWT.log("Reveal button - using associatedGrid reference");
-                reveal(associatedGrid);
+            if (minefieldGrid != null) {
+                // GWT.log("Reveal button - using minefieldGrid reference");
+                reveal(minefieldGrid);
             } else {
                 // TODO - throw an exception or fix this code
                 ComplexPanel parentPanel = (ComplexPanel) sender.getParent();
-                Widget oldestSibling = parentPanel.getWidget(0);
-                // Assuming the grid IS the oldest sibling ... which may not be correct in later versions
-                reveal((Grid) oldestSibling);
+                Widget olderSibling = parentPanel.getWidget(2);
+                // Assuming the grid IS the sibling at index 2 ... which may not be correct in later versions
+                reveal((Grid) olderSibling);
             }
 
         }  // end if Reveal button
@@ -229,7 +233,7 @@ public class RevealClickHandler implements ClickHandler {
         for (int i=0; i < 10; i++)
             for (int j=0; j < 10; j++) {
 
-                if (gameboard.getHTML(i, j).indexOf("button") > -1) {
+                if (gameboard.getHTML(i, j).contains("button")) {
 
                     gameboard.clearCell(i, j);
                     minefieldValue = minefield.getSpaceValue(i, j);
@@ -239,5 +243,34 @@ public class RevealClickHandler implements ClickHandler {
                 }  // end if
             } // end for
     } // end reveal
+
+    /**
+     * Called when the last space the user clicked was a "0"
+     *  (and the game didn't end). Since 0's mean every adjacent
+     *  square is safe, go thru & automatically click on every adjacent square.
+     * @param centerRowIndex - row of 0 spot last clicked on.
+     * @param centerColIndex - column of 0 spot last clicked on.
+     */
+    private void cascade(Grid gameboard, int centerRowIndex, int centerColIndex) {
+
+        for (int row = centerRowIndex - 1; row <= centerRowIndex + 1; row++) {
+            // Does this row really exist?
+            if (row < 0 || row >= minefield.SIZE)
+                continue;
+            for (int col = centerColIndex - 1; col <= centerColIndex + 1; col++) {
+                // Does this spot really exist?
+                if (col < 0 || col >= minefield.SIZE)
+                    continue;
+                // If this is the spot that called us, skip it
+                if (col == centerColIndex && row == centerRowIndex)
+                    continue;
+                // Is there a button here?
+                if (gameboard.getText(row, col).contains("?"))
+                    ((Button) gameboard.getWidget(row, col)).click();
+
+            } // end col for
+        } // end row for
+
+    } // end cascade
 
 }
