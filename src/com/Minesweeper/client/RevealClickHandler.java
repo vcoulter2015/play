@@ -167,7 +167,7 @@ public class RevealClickHandler implements ClickHandler {
                         outcomeLabel.setText("You won! Click Restart for another game.");
                 }  // end if win
                 else if ('0' == currentSpace) {
-                    GWT.log("Beginning cascade at row " + row + " column " + col + ".");
+                    // GWT.log("Beginning cascade at row " + row + " column " + col + ".");
                     cascade(gridParent, row, col);
                 }
             } // end if not a mine
